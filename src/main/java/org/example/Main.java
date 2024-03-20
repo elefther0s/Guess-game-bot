@@ -6,11 +6,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Main {
+    private final static String botToken = "";
     public static void main(String[] args) {
-        HelloBot helloBot = new HelloBot("");
+        GuessGameBot guessGameBot = new GuessGameBot(botToken);
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(helloBot);
+            telegramBotsApi.registerBot(guessGameBot);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
