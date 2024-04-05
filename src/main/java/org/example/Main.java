@@ -5,12 +5,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -20,7 +16,7 @@ public class Main {
         String url;
         String user;
         String password;
-        try(InputStream stream = Files.newInputStream(Path.of("E:\\IDEA Projects\\guess-game-bot\\src\\main\\java\\org\\example\\source.txt"));
+        try (InputStream stream = Main.class.getClassLoader().getResourceAsStream("properties.txt");
             Scanner scanner = new Scanner(stream)) {
             botToken = scanner.nextLine();
             url = scanner.nextLine();

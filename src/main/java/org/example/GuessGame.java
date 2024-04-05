@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.enums.Difficulty;
+import org.example.enums.WinCondition;
+
 import java.util.Random;
 
 public class GuessGame {

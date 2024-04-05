@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.enums.WinCondition;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,55 +17,58 @@ public class DataBaseService implements DataBaseInterface {
         }
     }
 
-    public void dataBaseWinUpdate(String name, int points) {
+    private boolean isUserInDatabase(String name) throws SQLException {
         try (PreparedStatement selectStatement = connection.prepareStatement("SELECT COUNT(*) FROM stats WHERE name = ?")) {
             selectStatement.setString(1, name);
 
             try (ResultSet result = selectStatement.executeQuery()) {
                 if (result.next()) {
                     int count = result.getInt(1);
-                    if (count == 0) {
-                        try (PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO stats (name, points, games, wins, last_game) VALUES (?, ?, 1, 1, CURRENT_TIMESTAMP)")) {
-                            insertStatement.setString(1, name);
-                            insertStatement.setInt(2, points);
-                            insertStatement.executeUpdate();
-                        }
-                    } else {
-                        try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE stats SET games = games + 1, wins = wins + 1, last_game = CURRENT_TIMESTAMP, points = points + ? WHERE name = ?")) {
-                            updateStatement.setInt(1, points);
-                            updateStatement.setString(2, name);
-                            updateStatement.executeUpdate();
-                        }
-                    }
+                    return count != 0;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new SQLException();
+        }
+        return false;
+    }
+
+    private void addUserInDatabase(String name, int points, boolean isWinning) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO stats (name, points, games, wins, last_game) VALUES (?, ?, 1, ?, CURRENT_TIMESTAMP)")) {
+            statement.setString(1, name);
+            statement.setInt(2, isWinning ? points : 0);
+            statement.setInt(3, isWinning ? 1 : 0);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException();
         }
     }
 
-    public void dataBaseLoseUpdate(String name) {
-        try (PreparedStatement selectStatement = connection.prepareStatement("SELECT COUNT(*) FROM stats WHERE name = ?")) {
-            selectStatement.setString(1, name);
-
-            try (ResultSet result = selectStatement.executeQuery()) {
-                if (result.next()) {
-                    int count = result.getInt(1);
-                    if (count == 0) {
-                        try (PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO stats (name, points, games, wins, last_game) VALUES (?, 0, 1, 0, CURRENT_TIMESTAMP)")) {
-                            insertStatement.setString(1, name);
-                            insertStatement.executeUpdate();
-                        }
-                    } else {
-                        try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE stats SET games = games + 1, last_game = CURRENT_TIMESTAMP WHERE name = ?")) {
-                            updateStatement.setString(1, name);
-                            updateStatement.executeUpdate();
-                        }
-                    }
-                }
-            }
+    private void updateUserInDatabase(String name, int points, boolean isWinning) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE stats SET games = games + 1, wins = wins + ?, last_game = CURRENT_TIMESTAMP, points = points + ? WHERE name = ?")) {
+            statement.setInt(1, isWinning ? 1 : 0);
+            statement.setInt(2, isWinning ? points : 0);
+            statement.setString(3, name);
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new SQLException();
+        }
+    }
+
+    public void dataBaseUpdate(String name, int points, WinCondition winCondition) {
+        if (winCondition.equals(WinCondition.IS_WINNING) || winCondition.equals(WinCondition.IS_LOSING)) {
+            try {
+                if (isUserInDatabase(name))
+                    updateUserInDatabase(name, points, winCondition == WinCondition.IS_WINNING);
+                else
+                    addUserInDatabase(name, points, winCondition == WinCondition.IS_WINNING);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
         }
     }
 

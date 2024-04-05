@@ -1,4 +1,4 @@
-package org.example;
+package org.example.enums;
 
 public enum Difficulty {
     EASY(4, 10, 1, "easy"),
