@@ -3,18 +3,21 @@ package org.example;
 import java.util.Random;
 
 public class GuessGame {
-    private final String START_MESSAGE = "Игра запущена.";
-    private final String GAME_START_INFO = "Загадано число от 1 до %d. Вы должны отгадать его за %d попыток.";
-    private final String WRONG_INPUT_MESSAGE = "Введите целое число от 1 до %d.";
-    private final String WIN_MESSAGE = "Вы выиграли. Загаданное число было %d. ";
-    private final String LOSS_MESSAGE = "Вы проиграли. Загаднное число было %d. ";
-    private final String LESS_NUMBER_MESSAGE = "Ваше число меньше загаданного. ";
-    private final String BIGGER_NUMBER_MESSAGE = "Ваше число больше загаданного. ";
-    private final String ATTEMPTS_INFO = "Осталось %d попыток.";
-    private final String DIFFICULTY_CHANGE_MESSAGE = "Сложность изменена на %s.";
+    private final static String START_MESSAGE = "Игра запущена.";
+    private final static String STOP_MESSAGE = "Игра остановлена.";
+    private final static String GAME_START_INFO = "Загадано число от 1 до %d. Вы должны отгадать его за %d %s.";
+    private final static String WRONG_INPUT_MESSAGE = "Введите целое число от 1 до %d.";
+    private final static String WIN_MESSAGE = "Вы выиграли. Было загадано число %d. ";
+    private final static String LOSS_MESSAGE = "Вы проиграли. Было загадано число %d. ";
+    private final static String LESS_NUMBER_MESSAGE = "Ваше число меньше загаданного. ";
+    private final static String GREATER_NUMBER_MESSAGE = "Ваше число больше загаданного. ";
+    private final static String ATTEMPTS_INFO = "%s %d %s.";
+    private final static String DIFFICULTY_CHANGE_MESSAGE = "Установлена сложность %s.";
+    private final static String WRONG_DIFFICULTY_MESSAGE = "Неправильно указан уровень сложности.";
+    private final static String HELP_MESSAGE = "Список комманд:\n   /start - запустить игру,\n  /stop - остановить игру,\n  /difficulty <сложность> - установить выбранную сложность(easy, medium, hard).";
     private int targetNumber, attempts;
     private Difficulty difficulty = Difficulty.MEDIUM;
-    public boolean isRunning = false;
+    private boolean isRunning = false;
 
     public void launchGame(){
         Random random = new Random();
@@ -23,42 +26,99 @@ public class GuessGame {
         attempts = difficulty.getAttempts();
     }
 
-    public String setDifficulty(Difficulty difficulty){
+    public String getStartMessage() {
+        String word = "попыток";
+        if(attempts > 1 && attempts < 5)
+            word = "попытки";
+        else if(attempts == 1)
+            word = "попытка";
+        String output = START_MESSAGE + '\n' + String.format(GAME_START_INFO, difficulty.getRange(), difficulty.getAttempts(), word);
+        return output;
+    }
+
+    public void stopGame(){
         isRunning = false;
+    }
+
+    public String getStopMessage() {
+        return STOP_MESSAGE;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setDifficulty(Difficulty difficulty){
         this.difficulty = difficulty;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public String getDifficultyInfo(){
         return String.format(DIFFICULTY_CHANGE_MESSAGE, difficulty.getTitle());
     }
 
-    public String getWinCondition(int inputNumber){
+    public String getWrongDifficultyMessage() {
+        return WRONG_DIFFICULTY_MESSAGE;
+    }
+
+    public WinCondition getWinCondition(int inputNumber) {
         if(inputNumber < 1 || inputNumber > difficulty.getRange()) {
             throw new RuntimeException();
         }
         attempts--;
-
-        String output = null;
         if(inputNumber == targetNumber) {
             isRunning = false;
-            output = String.format(WIN_MESSAGE, targetNumber);
+            return WinCondition.IS_WINNING;
         }
-        else if(attempts == 0) {
+        if(attempts == 0) {
             isRunning = false;
-            output = String.format(LOSS_MESSAGE, targetNumber);
+            return WinCondition.IS_LOSING;
         }
-        else if(inputNumber < targetNumber)
-            output = LESS_NUMBER_MESSAGE;
-        else if(inputNumber > targetNumber)
-            output = BIGGER_NUMBER_MESSAGE;
-        output = output + String.format(ATTEMPTS_INFO, attempts);
-        return output;
+        if(inputNumber > targetNumber) {
+            return WinCondition.INPUT_NUMBER_IS_GREATER;
+        }
+        if(inputNumber < targetNumber) {
+            return WinCondition.INPUT_NUMBER_IS_LESS;
+        }
+        return null;
+    }
+
+    public String getAttemptsInfo() {
+        String word = "попыток";
+        String verb = "Осталось";
+        if(attempts > 1 && attempts < 5)
+            word = "попытки";
+        else if(attempts == 1) {
+            word = "попытка";
+            verb = "Осталась";
+        }
+        return String.format(ATTEMPTS_INFO, verb, attempts, word);
+    }
+
+    public String getWinMessage() {
+        return String.format(WIN_MESSAGE, targetNumber);
+    }
+
+    public String getLoseMessage() {
+        return String.format(LOSS_MESSAGE, targetNumber);
+    }
+
+    public String getGreaterNumberMessage() {
+        return GREATER_NUMBER_MESSAGE;
+    }
+
+    public String getLessNumberMessage() {
+        return LESS_NUMBER_MESSAGE;
     }
 
     public String getWrongInputMessage() {
-        String output = String.format(WRONG_INPUT_MESSAGE, difficulty.getRange());
-        return output;
+        return String.format(WRONG_INPUT_MESSAGE, difficulty.getRange());
     }
 
-    public String getStartMessage() {
-        String output = START_MESSAGE + '\n' + String.format(GAME_START_INFO, difficulty.getRange(), difficulty.getAttempts());
-        return output;
+    public String getHelp() {
+        return HELP_MESSAGE;
     }
 }
