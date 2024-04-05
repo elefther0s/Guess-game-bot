@@ -1,10 +1,9 @@
 package org.example;
 
 import org.example.enums.WinCondition;
+import org.example.interfaces.DataBaseInterface;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class DataBaseService implements DataBaseInterface {
     private final Connection connection;
@@ -94,8 +93,8 @@ public class DataBaseService implements DataBaseInterface {
                 int points = resultSet.getInt("points");
                 int games = resultSet.getInt("games");
                 int wins = resultSet.getInt("wins");
-                String lastGame = resultSet.getTimestamp("last_game").toLocalDateTime().toLocalDate().toString();
                 String firstGame = resultSet.getTimestamp("first_game").toLocalDateTime().toLocalDate().toString();
+                String lastGame = resultSet.getTimestamp("last_game").toLocalDateTime().toLocalDate().toString();
 
                 message.append(i).append(". ").append(name).append(" Очков: ").append(points).append(" Игр: ").append(games).append(" Побед: ").append(wins).append("\n");
                 message.append("Первая игра: ").append(firstGame).append(" Последняя игра: ").append(lastGame).append("\n");

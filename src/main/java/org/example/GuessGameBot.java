@@ -56,6 +56,7 @@ public class GuessGameBot extends TelegramLongPollingBot {
                     .filter(dif -> dif.getTitle().equals(difficult))
                     .findFirst();
             game.setDifficulty(selectedDifficulty.orElseThrow(() -> new InvalidDifficultyException()));
+            output = game.getDifficultyInfo();
         } else if (command.equals(Commands.HELP.getTitle())) {
             output = game.getHelp();
         } else if (command.equals(Commands.STATS.getTitle())) {
@@ -80,7 +81,7 @@ public class GuessGameBot extends TelegramLongPollingBot {
                     output += game.getAttemptsInfo();
                     dataBaseService.dataBaseUpdate(update.getMessage().getChat().getUserName(), game.getDifficulty().getPoints(), winCondition);
                 } catch (Exception e) {
-                    output = game.getWrongInputMessage();
+                    output = game.getInvalidInputMessage();
                 }
             }
         }

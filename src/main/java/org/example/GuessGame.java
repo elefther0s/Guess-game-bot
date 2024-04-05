@@ -5,24 +5,24 @@ import org.example.enums.WinCondition;
 
 import java.util.Random;
 
-public class GuessGame {
+public class GuessGame implements org.example.interfaces.GuessGame {
     private final static String START_MESSAGE = "Игра запущена.";
     private final static String STOP_MESSAGE = "Игра остановлена.";
     private final static String GAME_START_INFO = "Загадано число от 1 до %d. Вы должны отгадать его за %d %s.";
-    private final static String WRONG_INPUT_MESSAGE = "Введите целое число от 1 до %d.";
+    private final static String INVALID_INPUT_MESSAGE = "Введите целое число от 1 до %d.";
     private final static String WIN_MESSAGE = "Вы выиграли. Было загадано число %d. ";
     private final static String LOSS_MESSAGE = "Вы проиграли. Было загадано число %d. ";
     private final static String LESS_NUMBER_MESSAGE = "Ваше число меньше загаданного. ";
     private final static String GREATER_NUMBER_MESSAGE = "Ваше число больше загаданного. ";
     private final static String ATTEMPTS_INFO = "%s %d %s.";
     private final static String DIFFICULTY_CHANGE_MESSAGE = "Установлена сложность %s.";
-    private final static String WRONG_DIFFICULTY_MESSAGE = "Неправильно указан уровень сложности.";
+    private final static String INVALID_DIFFICULTY_MESSAGE = "Неправильно указан уровень сложности.";
     private final static String HELP_MESSAGE = "Список комманд:\n   /start - запустить игру,\n  /stop - остановить игру,\n  /difficulty <сложность> - установить выбранную сложность(easy, medium, hard).";
     private int targetNumber, attempts;
     private Difficulty difficulty = Difficulty.MEDIUM;
     private boolean isRunning = false;
 
-    public void launchGame(){
+    public void launchGame() {
         Random random = new Random();
         targetNumber = random.nextInt(difficulty.getRange()) + 1;
         isRunning = true;
@@ -63,8 +63,8 @@ public class GuessGame {
         return String.format(DIFFICULTY_CHANGE_MESSAGE, difficulty.getTitle());
     }
 
-    public String getWrongDifficultyMessage() {
-        return WRONG_DIFFICULTY_MESSAGE;
+    public String getInvalidDifficultyMessage() {
+        return INVALID_DIFFICULTY_MESSAGE;
     }
 
     public WinCondition getWinCondition(int inputNumber) {
@@ -117,8 +117,8 @@ public class GuessGame {
         return LESS_NUMBER_MESSAGE;
     }
 
-    public String getWrongInputMessage() {
-        return String.format(WRONG_INPUT_MESSAGE, difficulty.getRange());
+    public String getInvalidInputMessage() {
+        return String.format(INVALID_INPUT_MESSAGE, difficulty.getRange());
     }
 
     public String getHelp() {
