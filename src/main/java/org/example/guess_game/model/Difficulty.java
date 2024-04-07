@@ -1,4 +1,4 @@
-package org.example.enums;
+package org.example.guess_game.model;
 
 public enum Difficulty {
     EASY(4, 10, 1, "easy"),

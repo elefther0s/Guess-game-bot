@@ -1,13 +1,13 @@
-package org.example;
+package org.example.guess_game.dao.impl;
 
-import org.example.enums.WinCondition;
-import org.example.interfaces.DataBaseInterface;
+import org.example.guess_game.dao.DataBaseService;
+import org.example.guess_game.model.WinCondition;
 
 import java.sql.*;
 
-public class DataBaseService implements DataBaseInterface {
+public class DataBaseServiceImpl implements DataBaseService {
     private final Connection connection;
-    public DataBaseService(String url, String user, String password) {
+    public DataBaseServiceImpl(String url, String user, String password) {
         try {
             connection = DriverManager.getConnection(url, user, password);
         } catch(SQLException e) {

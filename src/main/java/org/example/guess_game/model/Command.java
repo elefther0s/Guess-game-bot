@@ -1,6 +1,6 @@
-package org.example.enums;
+package org.example.guess_game.model;
 
-public enum Commands {
+public enum Command {
     START("/start"),
     DIFFICULTY("/difficulty"),
     HELP("/help"),
@@ -9,7 +9,7 @@ public enum Commands {
 
     private final String title;
 
-    Commands(String title) {
+    Command(String title) {
         this.title = title;
     }
 

@@ -1,7 +1,7 @@
-package org.example.interfaces;
+package org.example.guess_game;
 
-import org.example.enums.Difficulty;
-import org.example.enums.WinCondition;
+import org.example.guess_game.model.Difficulty;
+import org.example.guess_game.model.WinCondition;
 
 public interface GuessGame {
     void launchGame();
