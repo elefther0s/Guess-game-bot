@@ -26,7 +26,7 @@ public class Main {
             throw new RuntimeException(e);
         }
         DataBaseService dataBaseService = new DataBaseService(url, user, password);
-        GuessGameBot guessGameBot = new GuessGameBot(botToken, dataBaseService);
+        GuessGameBot guessGameBot = new GuessGameBot(botToken, new GuessGame(), dataBaseService);
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(guessGameBot);

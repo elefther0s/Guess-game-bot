@@ -16,6 +16,10 @@ public class DataBaseService implements DataBaseInterface {
         }
     }
 
+    public DataBaseService(Connection connection) {
+        this.connection = connection;
+    }
+
     private boolean isUserInDatabase(String name) throws SQLException {
         try (PreparedStatement selectStatement = connection.prepareStatement("SELECT COUNT(*) FROM stats WHERE name = ?")) {
             selectStatement.setString(1, name);

@@ -16,13 +16,14 @@ public class GuessGameBot extends TelegramLongPollingBot {
 
     private static final Logger logger = Logger.getLogger(GuessGameBot.class.getName());
 
-    private final GuessGame game = new GuessGame();
+    private final GuessGame game;
 
     private final DataBaseService dataBaseService;
 
-    public GuessGameBot(String botToken, DataBaseService dataBaseService) {
+    public GuessGameBot(String botToken, GuessGame guessGame, DataBaseService dataBaseService) {
         super(botToken);
         this.dataBaseService = dataBaseService;
+        this.game = guessGame;
     }
 
     @Override
