@@ -1,8 +1,8 @@
-package org.example.interfaces;
+package org.example.guess_game.dao;
 
-import org.example.enums.WinCondition;
+import org.example.guess_game.model.WinCondition;
 
-public interface DataBaseInterface {
+public interface DataBaseService {
     String getStats();
 
     String getUserStats(String name);

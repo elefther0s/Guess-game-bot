@@ -1,6 +1,7 @@
-package org.example;
+package org.example.guess_game;
 
 
+import org.example.guess_game.dao.impl.DataBaseServiceImpl;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -25,8 +26,8 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        DataBaseService dataBaseService = new DataBaseService(url, user, password);
-        GuessGameBot guessGameBot = new GuessGameBot(botToken, new GuessGame(), dataBaseService);
+        DataBaseServiceImpl dataBaseService = new DataBaseServiceImpl(url, user, password);
+        GuessGameBot guessGameBot = new GuessGameBot(botToken, dataBaseService);
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(guessGameBot);

@@ -1,11 +1,11 @@
-package org.example;
+package org.example.guess_game;
 
-import org.example.enums.Difficulty;
-import org.example.enums.WinCondition;
+import org.example.guess_game.model.Difficulty;
+import org.example.guess_game.model.WinCondition;
 
 import java.util.Random;
 
-public class GuessGame implements org.example.interfaces.GuessGame {
+public class GuessGameImpl implements GuessGame {
     private final static String START_MESSAGE = "Игра запущена.";
     private final static String STOP_MESSAGE = "Игра остановлена.";
     private final static String GAME_START_INFO = "Загадано число от 1 до %d. Вы должны отгадать его за %d %s.";

@@ -1,8 +1,9 @@
-package org.example;
-import org.example.enums.Commands;
-import org.example.enums.Difficulty;
-import org.example.enums.WinCondition;
-import org.example.exceptions.InvalidDifficultyException;
+package org.example.guess_game;
+import org.example.guess_game.dao.impl.DataBaseServiceImpl;
+import org.example.guess_game.model.Command;
+import org.example.guess_game.model.Difficulty;
+import org.example.guess_game.model.WinCondition;
+import org.example.guess_game.exception.InvalidDifficultyException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,14 +17,13 @@ public class GuessGameBot extends TelegramLongPollingBot {
 
     private static final Logger logger = Logger.getLogger(GuessGameBot.class.getName());
 
-    private final GuessGame game;
+    private final GuessGameImpl game = new GuessGameImpl();
 
-    private final DataBaseService dataBaseService;
+    private final DataBaseServiceImpl dataBaseService;
 
-    public GuessGameBot(String botToken, GuessGame guessGame, DataBaseService dataBaseService) {
+    public GuessGameBot(String botToken, DataBaseServiceImpl dataBaseService) {
         super(botToken);
         this.dataBaseService = dataBaseService;
-        this.game = guessGame;
     }
 
     @Override
@@ -43,10 +43,10 @@ public class GuessGameBot extends TelegramLongPollingBot {
         String command = tokens[0];
         String output = null;
         message.setChatId(update.getMessage().getChatId());
-        if (command.equals(Commands.START.getTitle())) {
+        if (command.equals(Command.START.getTitle())) {
             game.launchGame();
             output = game.getStartMessage();
-        } else if (command.equals(Commands.DIFFICULTY.getTitle())) {
+        } else if (command.equals(Command.DIFFICULTY.getTitle())) {
             String difficult = tokens[1];
             output = "";
             if (game.isRunning()) {
@@ -58,12 +58,13 @@ public class GuessGameBot extends TelegramLongPollingBot {
                     .findFirst();
             game.setDifficulty(selectedDifficulty.orElseThrow(() -> new InvalidDifficultyException()));
             output = game.getDifficultyInfo();
-        } else if (command.equals(Commands.HELP.getTitle())) {
+        } else if (command.equals(Command.HELP.getTitle())) {
             output = game.getHelp();
-        } else if (command.equals(Commands.STATS.getTitle())) {
+        } else if (command.equals(Command.STATS.getTitle())) {
             output = dataBaseService.getStats() + dataBaseService.getUserStats(update.getMessage().getChat().getUserName());
         } else if (game.isRunning()) {
-            if (command.equals(Commands.STOP.getTitle())) {
+            // TODO большой блок, для читаемости и уменьшения вложенности лучше вынести в отдельным приватный метод
+            if (command.equals(Command.STOP.getTitle())) {
                 game.stopGame();
                 output = game.getStopMessage();
             } else {
@@ -82,6 +83,7 @@ public class GuessGameBot extends TelegramLongPollingBot {
                     output += game.getAttemptsInfo();
                     dataBaseService.dataBaseUpdate(update.getMessage().getChat().getUserName(), game.getDifficulty().getPoints(), winCondition);
                 } catch (Exception e) {
+                    logger.warning(e.getMessage());
                     output = game.getInvalidInputMessage();
                 }
             }
@@ -91,6 +93,7 @@ public class GuessGameBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
+            logger.warning(e.getMessage());
             e.printStackTrace();
         }
     }

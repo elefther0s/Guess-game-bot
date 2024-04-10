@@ -1,4 +1,4 @@
-package org.example.enums;
+package org.example.guess_game.model;
 
 public enum WinCondition {
     IS_WINNING,

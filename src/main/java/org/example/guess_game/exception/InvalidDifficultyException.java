@@ -1,4 +1,4 @@
-package org.example.exceptions;
+package org.example.guess_game.exception;
 
 public class InvalidDifficultyException extends RuntimeException {
     public InvalidDifficultyException () {
