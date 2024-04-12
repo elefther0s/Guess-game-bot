@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.guess_game.dao.DataBaseService;
+import org.example.guess_game.dao.impl.DataBaseServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
@@ -12,7 +14,7 @@ import static org.mockito.Mockito.when;
 class DataBaseServiceTest {
 
     private Connection connection = mock(Connection.class);
-    private DataBaseService sut = new DataBaseService(connection);
+    private DataBaseService sut = new DataBaseServiceImpl(connection);
 
     @Test
     void dataBaseUpdate() {

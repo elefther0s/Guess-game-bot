@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.guess_game.GuessGame;
+import org.example.guess_game.GuessGameBot;
+import org.example.guess_game.dao.DataBaseService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -17,7 +20,7 @@ class GuessGameBotTest {
 
 
     // system under test
-    private GuessGameBot sut = new GuessGameBot(token, guessGame, dataBaseService);
+    private GuessGameBot sut = new GuessGameBot(token, dataBaseService);
 
     // todo сложно написать тест из-за сильной связанности логики игры и отправки ответа через бота
     // в идеал вынести логику игры в отдельный класс, тогда можно было бы протестировать изолировано

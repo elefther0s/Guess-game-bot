@@ -16,7 +16,7 @@ public class DataBaseServiceImpl implements DataBaseService {
         }
     }
 
-    public DataBaseService(Connection connection) {
+    public DataBaseServiceImpl(Connection connection) {
         this.connection = connection;
     }
 

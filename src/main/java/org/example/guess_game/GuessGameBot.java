@@ -1,5 +1,5 @@
 package org.example.guess_game;
-import org.example.guess_game.dao.impl.DataBaseServiceImpl;
+import org.example.guess_game.dao.DataBaseService;
 import org.example.guess_game.model.Command;
 import org.example.guess_game.model.Difficulty;
 import org.example.guess_game.model.WinCondition;
@@ -19,9 +19,9 @@ public class GuessGameBot extends TelegramLongPollingBot {
 
     private final GuessGameImpl game = new GuessGameImpl();
 
-    private final DataBaseServiceImpl dataBaseService;
+    private final DataBaseService dataBaseService;
 
-    public GuessGameBot(String botToken, DataBaseServiceImpl dataBaseService) {
+    public GuessGameBot(String botToken, DataBaseService dataBaseService) {
         super(botToken);
         this.dataBaseService = dataBaseService;
     }
@@ -63,38 +63,42 @@ public class GuessGameBot extends TelegramLongPollingBot {
         } else if (command.equals(Command.STATS.getTitle())) {
             output = dataBaseService.getStats() + dataBaseService.getUserStats(update.getMessage().getChat().getUserName());
         } else if (game.isRunning()) {
-            // TODO большой блок, для читаемости и уменьшения вложенности лучше вынести в отдельным приватный метод
-            if (command.equals(Command.STOP.getTitle())) {
-                game.stopGame();
-                output = game.getStopMessage();
-            } else {
-                try {
-                    int inputNumber = Integer.parseInt(update.getMessage().getText());
-                    WinCondition winCondition = game.getWinCondition(inputNumber);
-                    if (winCondition.equals(WinCondition.IS_WINNING)) {
-                        output = game.getWinMessage();
-                    } else if (winCondition.equals(WinCondition.IS_LOSING)) {
-                        output = game.getLoseMessage();
-                    } else if (winCondition.equals(WinCondition.INPUT_NUMBER_IS_GREATER)) {
-                        output = game.getGreaterNumberMessage();
-                    } else if (winCondition.equals(WinCondition.INPUT_NUMBER_IS_LESS)) {
-                        output = game.getLessNumberMessage();
-                    }
-                    output += game.getAttemptsInfo();
-                    dataBaseService.dataBaseUpdate(update.getMessage().getChat().getUserName(), game.getDifficulty().getPoints(), winCondition);
-                } catch (Exception e) {
-                    logger.warning(e.getMessage());
-                    output = game.getInvalidInputMessage();
-                }
-            }
+            output = inGameActions(update, command);
         }
         message.setText(output);
-
         try {
             execute(message);
         } catch (TelegramApiException e) {
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private String inGameActions(Update update, String command) {
+        String output = "";
+        if (command.equals(Command.STOP.getTitle())) {
+            game.stopGame();
+            output = game.getStopMessage();
+        } else {
+            try {
+                int inputNumber = Integer.parseInt(update.getMessage().getText());
+                WinCondition winCondition = game.getWinCondition(inputNumber);
+                if (winCondition.equals(WinCondition.IS_WINNING)) {
+                    output = game.getWinMessage();
+                } else if (winCondition.equals(WinCondition.IS_LOSING)) {
+                    output = game.getLoseMessage();
+                } else if (winCondition.equals(WinCondition.INPUT_NUMBER_IS_GREATER)) {
+                    output = game.getGreaterNumberMessage();
+                } else if (winCondition.equals(WinCondition.INPUT_NUMBER_IS_LESS)) {
+                    output = game.getLessNumberMessage();
+                }
+                output += game.getAttemptsInfo();
+                dataBaseService.dataBaseUpdate(update.getMessage().getChat().getUserName(), game.getDifficulty().getPoints(), winCondition);
+            } catch (Exception e) {
+                logger.warning(e.getMessage());
+                output = game.getInvalidInputMessage();
+            }
+        }
+        return output;
     }
 }

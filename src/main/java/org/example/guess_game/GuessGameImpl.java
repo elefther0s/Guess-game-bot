@@ -17,7 +17,7 @@ public class GuessGameImpl implements GuessGame {
     private final static String ATTEMPTS_INFO = "%s %d %s.";
     private final static String DIFFICULTY_CHANGE_MESSAGE = "Установлена сложность %s.";
     private final static String INVALID_DIFFICULTY_MESSAGE = "Неправильно указан уровень сложности.";
-    private final static String HELP_MESSAGE = "Список комманд:\n   /start - запустить игру,\n  /stop - остановить игру,\n  /difficulty <сложность> - установить выбранную сложность(easy, medium, hard).";
+    private final static String HELP_MESSAGE = "Список комманд:\n/start - запустить игру,\n/stop - остановить игру,\n/stats - показать статистику,\n/difficulty <сложность> - установить выбранную сложность(easy, medium, hard).";
     private int targetNumber, attempts;
     private Difficulty difficulty = Difficulty.MEDIUM;
     private boolean isRunning = false;
