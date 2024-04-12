@@ -1,9 +1,12 @@
 package org.example.guess_game.dao.impl;
 
 import org.example.guess_game.dao.DataBaseService;
+import org.example.guess_game.dao.Stats;
 import org.example.guess_game.model.WinCondition;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataBaseServiceImpl implements DataBaseService {
     private final Connection connection;
@@ -110,11 +113,23 @@ public class DataBaseServiceImpl implements DataBaseService {
         return message.toString();
     }
 
+
+    //                List<Stats> statsList = new ArrayList<>();
+//                var mapper = new StatsRowMapper();
+//                while (result.next()) {
+//                    statsList.add(mapper.map(result));
+//                }
+    // return statsList.get(0);
+
     public String getUserStats(String userName) {
+
+
         StringBuilder message = new StringBuilder();
         try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM stats WHERE name = ?")) {
             statement.setString(1, userName);
             try(ResultSet result = statement.executeQuery()) {
+
+
                 if (result.next()) {
                     int count = result.getInt(1);
                     if (count == 0) {
