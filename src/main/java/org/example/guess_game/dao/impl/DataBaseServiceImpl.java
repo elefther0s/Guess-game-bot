@@ -15,7 +15,7 @@ public class DataBaseServiceImpl implements DataBaseService {
             connection = DriverManager.getConnection(url, user, password);
         } catch(SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("SQL");
+            throw new RuntimeException();
         }
     }
 

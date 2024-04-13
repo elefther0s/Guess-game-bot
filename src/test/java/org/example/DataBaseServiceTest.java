@@ -37,6 +37,6 @@ class DataBaseServiceTest {
 
         String result = sut.getUserStats("username");
 
-        assertEquals("Вы еще не играли.", result);
+        assertEquals("Вы ещё не играли.", result);
     }
 }

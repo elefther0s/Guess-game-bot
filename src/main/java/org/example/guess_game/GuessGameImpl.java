@@ -69,7 +69,7 @@ public class GuessGameImpl implements GuessGame {
 
     public WinCondition getWinCondition(int inputNumber) {
         if(inputNumber < 1 || inputNumber > difficulty.getRange()) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException();
         }
         attempts--;
         if(inputNumber == targetNumber) {
