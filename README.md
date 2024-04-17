@@ -1,4 +1,4 @@
-https://t.me/GuessGamingBot\n
+https://t.me/GuessGamingBot
 Список комманд:
 /start - запустить игру,
 /stop - остановить игру,
