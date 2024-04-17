@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+
 public class Main {
 
     public static void main(String[] args) {
@@ -28,8 +29,7 @@ public class Main {
         }
         DataBaseServiceImpl dataBaseService = new DataBaseServiceImpl(url, user, password);
 
-//        GuessGameBot guessGameBot = new GuessGameBot(botToken, dataBaseService);
-        GuessGameBot guessGameBot = new GuessGameBot(botToken, null);
+        GuessGameBot guessGameBot = new GuessGameBot(botToken, dataBaseService);
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(guessGameBot);

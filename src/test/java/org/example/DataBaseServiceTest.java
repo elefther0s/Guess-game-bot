@@ -1,10 +1,12 @@
 package org.example;
 
 import org.example.guess_game.dao.DataBaseService;
+import org.example.guess_game.dao.Stats;
 import org.example.guess_game.dao.impl.DataBaseServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,15 +19,22 @@ class DataBaseServiceTest {
     private DataBaseService sut = new DataBaseServiceImpl(connection);
 
     @Test
-    void dataBaseUpdate() {
+    void getTopStats_when_stats_isEmpty() throws SQLException {
+        PreparedStatement statement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+
+        when(connection.prepareStatement(anyString())).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(0);
+
+        List<Stats> result = sut.getTopPlayersStats();
+
+        assertNull(result);
     }
 
     @Test
-    void getStats() {
-    }
-
-    @Test
-    void given_getUserStats_when_userNotFound_then_returnCorrectMessage() throws SQLException {
+    void given_getUserStats_when_userNotFound() throws SQLException {
 
         PreparedStatement statement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
@@ -35,8 +44,8 @@ class DataBaseServiceTest {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(0);
 
-        String result = sut.getUserStats("username");
+        Stats result = sut.getUserStats("username");
 
-        assertEquals("Вы ещё не играли.", result);
+        assertNull(result);
     }
 }

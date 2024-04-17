@@ -2,12 +2,14 @@ package org.example.guess_game.service;
 
 import org.example.guess_game.GuessGameImpl;
 import org.example.guess_game.dao.DataBaseService;
+import org.example.guess_game.dao.Stats;
 import org.example.guess_game.exception.InvalidDifficultyException;
 import org.example.guess_game.model.Command;
 import org.example.guess_game.model.Difficulty;
 import org.example.guess_game.model.WinCondition;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -39,7 +41,7 @@ public class GuessGameServiceImpl implements GuessGameService {
                 Optional<Difficulty> selectedDifficulty = Arrays.stream(Difficulty.values())
                         .filter(dif -> dif.getTitle().equals(difficulty))
                         .findFirst();
-                game.setDifficulty(selectedDifficulty.orElseThrow(() -> new InvalidDifficultyException()));
+                game.setDifficulty(selectedDifficulty.orElseThrow(InvalidDifficultyException::new));
                 if (game.isRunning()) {
                     game.stopGame();
                     output = game.getStopMessage() + '\n';
@@ -52,11 +54,49 @@ public class GuessGameServiceImpl implements GuessGameService {
         } else if (command.equals(Command.HELP.getTitle())) {
             output = game.getHelp();
         } else if (command.equals(Command.STATS.getTitle())) {
-            output = dataBaseService.getStats() + dataBaseService.getUserStats(username);
+            output = topPlayersStatsToString(dataBaseService.getTopPlayersStats()) + userStatsToString(dataBaseService.getUserStats(username));
         } else if (game.isRunning()) {
             output = inGameUpdate(username, command);
         }
         return output;
+    }
+
+    private String userStatsToString(Stats userStats) {
+        if (userStats == null) {
+            return "Вы ещё не играли.";
+        }
+        StringBuilder message = new StringBuilder();
+        String name = "@" + userStats.getName();
+        int points = userStats.getPoints();
+        int games = userStats.getGames();
+        int wins = userStats.getWins();
+        String firstGame = userStats.getFirstGame().toLocalDate().toString();
+        String lastGame = userStats.getLastGame().toLocalDate().toString();
+
+        message.append("Ваша статистика:\n").append(name).append(" Очков: ").append(points).append(" Игр: ").append(games).append(" Побед: ").append(wins).append("\n");
+        message.append("Первая игра: ").append(firstGame).append(" Последняя игра: ").append(lastGame).append("\n");
+        return message.toString();
+    }
+
+    private String topPlayersStatsToString(List<Stats> statsList) {
+        if (statsList == null) {
+            return "Статистика пуста.";
+        }
+        StringBuilder message = new StringBuilder();
+        int i = 1;
+        for (Stats stats: statsList) {
+            String name = "@" + stats.getName();
+            int points = stats.getPoints();
+            int games = stats.getGames();
+            int wins = stats.getWins();
+            String firstGame = stats.getFirstGame().toLocalDate().toString();
+            String lastGame = stats.getLastGame().toLocalDate().toString();
+
+            message.append(i).append(". ").append(name).append(" Очков: ").append(points).append(" Игр: ").append(games).append(" Побед: ").append(wins).append("\n");
+            message.append("Первая игра: ").append(firstGame).append(" Последняя игра: ").append(lastGame).append("\n");
+            i++;
+        }
+        return message.toString();
     }
 
     private String inGameUpdate(String username, String command) {

@@ -9,6 +9,5 @@ public interface GuessGame {
     void setDifficulty(Difficulty difficulty);
     Difficulty getDifficulty();
     WinCondition getWinCondition(int inputNumber);
-
-    Object getStartMessage();
+    String getStartMessage();
 }

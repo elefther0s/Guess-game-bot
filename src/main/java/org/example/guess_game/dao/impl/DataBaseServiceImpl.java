@@ -10,6 +10,9 @@ import java.util.List;
 
 public class DataBaseServiceImpl implements DataBaseService {
     private final Connection connection;
+
+    private final StatsRowMapper mapper = new StatsRowMapper();
+
     public DataBaseServiceImpl(String url, String user, String password) {
         try {
             connection = DriverManager.getConnection(url, user, password);
@@ -78,15 +81,14 @@ public class DataBaseServiceImpl implements DataBaseService {
         }
     }
 
-    public String getStats() {
-        StringBuilder message = new StringBuilder();
+    public List<Stats> getTopPlayersStats() {
+        List<Stats> topPlayersStats = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM stats");
             ResultSet result = statement.executeQuery()) {
             if (result.next()) {
                 int count = result.getInt(1);
                 if (count == 0) {
-                    message.append("Статистика пуста.\n");
-                    return message.toString();
+                    return null;
                 }
             }
         } catch (SQLException e) {
@@ -94,47 +96,24 @@ public class DataBaseServiceImpl implements DataBaseService {
         }
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM stats ORDER BY points DESC LIMIT 5");
              ResultSet resultSet = statement.executeQuery()) {
-            int i = 1;
             while (resultSet.next()) {
-                String name = "@" + resultSet.getString("name");
-                int points = resultSet.getInt("points");
-                int games = resultSet.getInt("games");
-                int wins = resultSet.getInt("wins");
-                String firstGame = resultSet.getTimestamp("first_game").toLocalDateTime().toLocalDate().toString();
-                String lastGame = resultSet.getTimestamp("last_game").toLocalDateTime().toLocalDate().toString();
-
-                message.append(i).append(". ").append(name).append(" Очков: ").append(points).append(" Игр: ").append(games).append(" Побед: ").append(wins).append("\n");
-                message.append("Первая игра: ").append(firstGame).append(" Последняя игра: ").append(lastGame).append("\n");
-                i++;
+                topPlayersStats.add(mapper.map(resultSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException();
         }
-        return message.toString();
+        return topPlayersStats;
     }
 
-
-    //                List<Stats> statsList = new ArrayList<>();
-//                var mapper = new StatsRowMapper();
-//                while (result.next()) {
-//                    statsList.add(mapper.map(result));
-//                }
-    // return statsList.get(0);
-
-    public String getUserStats(String userName) {
-
-
-        StringBuilder message = new StringBuilder();
+    public Stats getUserStats(String userName) {
+        Stats userStats = null;
         try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM stats WHERE name = ?")) {
             statement.setString(1, userName);
             try(ResultSet result = statement.executeQuery()) {
-
-
                 if (result.next()) {
                     int count = result.getInt(1);
                     if (count == 0) {
-                        message.append("Вы ещё не играли.");
-                        return message.toString();
+                        return null;
                     }
                 }
             }
@@ -145,20 +124,12 @@ public class DataBaseServiceImpl implements DataBaseService {
             statement.setString(1, userName);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    String name = "@" + resultSet.getString("name");
-                    int points = resultSet.getInt("points");
-                    int games = resultSet.getInt("games");
-                    int wins = resultSet.getInt("wins");
-                    String firstGame = resultSet.getTimestamp("first_game").toLocalDateTime().toLocalDate().toString();
-                    String lastGame = resultSet.getTimestamp("last_game").toLocalDateTime().toLocalDate().toString();
-
-                    message.append("Ваша статистика:\n").append(name).append(" Очков: ").append(points).append(" Игр: ").append(games).append(" Побед: ").append(wins).append("\n");
-                    message.append("Первая игра: ").append(firstGame).append(" Последняя игра: ").append(lastGame).append("\n");
+                    userStats = mapper.map(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException();
         }
-        return message.toString();
+        return userStats;
     }
 }

@@ -2,15 +2,13 @@ package org.example.guess_game.dao;
 
 import org.example.guess_game.model.WinCondition;
 
+import java.util.List;
+
 public interface DataBaseService {
-    // todo return Stats
-    String getStats();
+    List<Stats> getTopPlayersStats();
 
 
-    String getUserStats(String name);
+    Stats getUserStats(String name);
 
     void dataBaseUpdate(String name, int points, WinCondition winCondition);
-
-    // top players
-    // List<Stats>
 }
